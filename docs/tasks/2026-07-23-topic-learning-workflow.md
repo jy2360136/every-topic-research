@@ -29,7 +29,6 @@
     - 提供 `examples/generate_demo_html.py` 离线演示 UI
     - 提供 Bing 兜底（`--use-bing`）
     - 用户可绕过 search 阶段，直接用油猴脚本喂字幕到 sources/ 后跑 process
-- **安全风险**：旧 `job_matcher.py:15` 中明文 Key 已在聊天记录里多次出现，建议立即 rotate。
 - **API 兼容性风险**：B 站 `player/v2` 接口可能反爬升级；当前实现只取字幕列表最小化请求。
 
 ## 进度
@@ -70,5 +69,3 @@
 - A. 解决网络问题 → 走完整 search + process 流程
 - B. 加 `import` 子命令 → 用户用油猴脚本喂字幕 → 跑 process
 - C. 调整 UI / 评分权重 → 等用户看完演示页后反馈
-
-无论选哪条，A 都建议并行进行（旧 Key rotate）。

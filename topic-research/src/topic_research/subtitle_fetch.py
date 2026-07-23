@@ -20,6 +20,7 @@ from typing import Literal
 
 import requests
 
+from .bili_session import build_session
 from .search_bilibili import get_video_detail
 
 logger = logging.getLogger(__name__)
@@ -27,15 +28,6 @@ logger = logging.getLogger(__name__)
 VIEW_URL = "https://api.bilibili.com/x/web-interface/view"
 PLAYER_URL = "https://api.bilibili.com/x/player/v2"
 SUBTITLE_PROXY = "https://aisubtitle.hdslb.com/"
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-    ),
-    "Referer": "https://www.bilibili.com",
-    "Accept-Language": "zh-CN,zh;q=0.9",
-}
 
 SubtitleType = Literal["official", "auto", "none", "unknown"]
 
@@ -57,9 +49,7 @@ class SubtitleResult:
 
 
 def _get_session() -> requests.Session:
-    s = requests.Session()
-    s.headers.update(HEADERS)
-    return s
+    return build_session()
 
 
 def fetch_subtitle_meta(bvid: str, sess: requests.Session | None = None) -> dict:

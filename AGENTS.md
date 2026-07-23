@@ -40,7 +40,6 @@
 
 - **API Key 只通过环境变量 `MINIMAX_API_KEY` 或本地 `.env` 传入**；缺失即报错退出，绝不写入源码、测试夹具或日志。
 - `.env` 已在 `.gitignore` 中；任何对 `.env.example` 的修改必须保持 key 占位符为 `your-minimax-key-here`。
-- 历史上 [`job_matcher.py:15`](job_matcher.py#L15) 中明文泄漏的 Key 应尽快在 MiniMax 控制台 rotate，不应被新代码复用。
 - 仓库内任何位置出现形如 `sk-cp-...` 的字面量都视为安全事件，先报告位置再处置，禁止复制、提交或贴回聊天。
 
 ## Encoding and platforms

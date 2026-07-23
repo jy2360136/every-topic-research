@@ -154,17 +154,39 @@ HTML_TEMPLATE = """<!DOCTYPE html>
           url: i.url
         }}))
     }};
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {{ type: 'application/json' }});
+    const json = JSON.stringify(payload, null, 2);
+    const fileName = '{slug}-selection.json';
+
+    // 优先用 File System Access API（Chrome / Edge），弹出"另存为"对话框
+    if (window.showSaveFilePicker) {{
+      window.showSaveFilePicker({{
+        suggestedName: fileName,
+        types: [{{ description: 'JSON', accept: {{ 'application/json': ['.json'] }} }}]
+      }}).then(async (handle) => {{
+        const writable = await handle.createWritable();
+        await writable.write(json);
+        await writable.close();
+        document.getElementById('export-msg').textContent =
+          '✅ 已保存到 ' + handle.name + '。请把文件放到 topic-research/topics/{slug}/selection.json，然后跑 python -m topic_research.cli run --slug {slug}';
+      }}).catch(err => {{
+        if (err.name === 'AbortError') return;  // 用户取消
+        document.getElementById('export-msg').textContent = '⚠️ 保存失败：' + err.message;
+      }});
+      return;
+    }}
+
+    // 兜底：老浏览器用 a.download，文件落到默认下载目录
+    const blob = new Blob([json], {{ type: 'application/json' }});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'selection.json';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     document.getElementById('export-msg').textContent =
-      '✅ 已导出 ' + payload.selected.length + ' 条，请将 selection.json 放回主题目录。';
+      '✅ 已下载 ' + fileName + '。直接跑 python -m topic_research.cli run --slug {slug}，会自动从下载目录把它挪到主题目录并开始处理。';
   }}
 
   document.getElementById('total-count').textContent = items.length;

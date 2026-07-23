@@ -84,6 +84,8 @@ def cmd_search(args: argparse.Namespace) -> None:
             title,
             max_results=args.limit,
             sort=args.sort,
+            min_duration=args.min_duration,
+            max_duration=args.max_duration,
         )
 
     # 字幕状态探测：仅查字幕列表，不下载字幕内容
@@ -274,6 +276,56 @@ def cmd_init(args: argparse.Namespace) -> None:
     print(topic_dir)
 
 
+def _candidate_selection_paths(slug: str, topic_dir: Path) -> list[Path]:
+    """在常见位置查找用户导出的 selection.json"""
+    candidates: list[Path] = []
+    target_name = topic_dir / "selection.json"
+    candidates.append(target_name)  # 主题目录本身
+
+    # 浏览器默认下载目录
+    home = Path.home()
+    for dl in (home / "Downloads", home / "下载", home / "Desktop"):
+        if dl.exists():
+            candidates.append(dl / f"{slug}-selection.json")
+            candidates.append(dl / "selection.json")
+    return candidates
+
+
+def cmd_run(args: argparse.Namespace) -> None:
+    """一键流程：自动找 selection.json（主题目录或下载目录）→ 复制进去 → 跑 process
+
+    浏览器安全模型下 candidates.html 无法直接写文件到项目目录，
+    所以让 run 子命令把用户从下载目录导出的 selection.json 自动归位。
+    """
+    require_api_key()
+    topic_dir = _topic_dir(args.slug, args.topic)
+    if not topic_dir.exists():
+        raise SystemExit(f"主题目录不存在：{topic_dir}。请先运行 search 阶段。")
+
+    target = topic_dir / "selection.json"
+    if target.exists():
+        logger.info("selection.json 已在主题目录：%s", target)
+    else:
+        found = None
+        for cand in _candidate_selection_paths(args.slug or topic_dir.name, topic_dir):
+            if cand.exists() and cand.resolve() != target.resolve():
+                found = cand
+                break
+        if not found:
+            raise SystemExit(
+                f"未在主题目录或下载目录找到 selection.json。\n"
+                f"  - 预期位置：{target}\n"
+                f"  - 也查找了：~/Downloads/、~/下载/、~/Desktop/ 下的 {args.slug}-selection.json\n"
+                f"  请先在 candidates.html 勾选并导出 selection.json。"
+            )
+        import shutil
+        shutil.copy2(found, target)
+        logger.info("已把 selection.json 从 %s 复制到 %s", found, target)
+
+    # 透传给 cmd_process
+    cmd_process(argparse.Namespace(slug=args.slug, topic=args.topic))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="topic-research", description="主题学习研究工作流")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -283,6 +335,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_search.add_argument("--slug", help="主题目录 slug（默认与 topic 一致）")
     p_search.add_argument("--limit", type=int, default=CONFIG.BILI_CANDIDATE_LIMIT, help="候选上限")
     p_search.add_argument("--sort", default="totalrank", help="排序：totalrank/click/pubdate/dm/stow")
+    p_search.add_argument("--min-duration", type=int, default=CONFIG.BILI_MIN_DURATION, help="最小时长（秒），默认 300 = 5 分钟")
+    p_search.add_argument("--max-duration", type=int, default=CONFIG.BILI_MAX_DURATION, help="最大时长（秒），默认 2400 = 40 分钟")
     p_search.add_argument("--use-bing", action="store_true", help="走 Bing 搜索 B站视频（用于无法直连 api.bilibili.com 的环境）")
     p_search.set_defaults(func=cmd_search)
 
@@ -295,6 +349,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_init.add_argument("--topic", required=True)
     p_init.add_argument("--slug")
     p_init.set_defaults(func=cmd_init)
+
+    p_run = sub.add_parser("run", help="一键流程：找 selection.json → 跑 process（自动从下载目录归位）")
+    p_run.add_argument("--topic", help="主题关键词")
+    p_run.add_argument("--slug", help="主题 slug")
+    p_run.set_defaults(func=cmd_run)
 
     return parser
 

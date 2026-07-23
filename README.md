@@ -39,5 +39,4 @@ python -m topic_research.cli process --slug agent-development
 ## 安全提示
 
 - API Key **仅通过 `MINIMAX_API_KEY` 环境变量或 `.env` 传入**；绝不入源码、不入聊天记录
-- `.gitignore` 已排除 `.env`、`job_matcher.py`（旧脚本含泄漏 Key）、油猴脚本副本、所有主题数据
-- 历史 [`job_matcher.py`](job_matcher.py) 中明文泄漏的 Key 应尽快在 MiniMax 控制台 rotate
+- `.gitignore` 已排除 `.env`、油猴脚本副本、所有主题数据

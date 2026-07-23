@@ -251,4 +251,4 @@ topic-research/
 
 - MiniMax API Key 仅通过环境变量 `MINIMAX_API_KEY` 传入
 - 仓库一律不上传 .env、candidates 选择 JSON、sources/、cards/ 等本地资料
-- job_matcher.py 中泄漏的 Key 应在控制台轮换，不在新代码中复用
+- 仓库内任何位置出现形如 `sk-cp-...` 的字面量都视为安全事件，需先报告位置再处置

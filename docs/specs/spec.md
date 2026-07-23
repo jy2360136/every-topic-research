@@ -120,7 +120,7 @@ score = 0.30*播放量分 + 0.20*相关性分 + 0.15*发布时间分
 
 - API Key 只通过 `MINIMAX_API_KEY` 或 `.env` 传入，绝不入源码 / 不入日志 / 不入聊天记录。
 - `.env` 已被 `.gitignore`；任何对 `.env.example` 的修改必须保持占位符为 `your-minimax-key-here`。
-- 历史上 [`job_matcher.py:15`](../../job_matcher.py#L15) 中明文泄漏的 Key 必须先在 MiniMax 控制台 rotate，再被本工具使用。
+- 仓库内任何位置出现形如 `sk-cp-...` 的字面量都视为安全事件，需先报告位置再处置。
 
 ## 10. 已知限制
 

@@ -14,6 +14,9 @@ class Config:
     )
     MINIMAX_MODEL: str = os.environ.get("MINIMAX_MODEL", "MiniMax-M3")
     BILI_CANDIDATE_LIMIT: int = int(os.environ.get("BILI_CANDIDATE_LIMIT", "60"))
+    BILI_MIN_DURATION: int = int(os.environ.get("BILI_MIN_DURATION", "300"))
+    BILI_MAX_DURATION: int = int(os.environ.get("BILI_MAX_DURATION", "2400"))
+    BILI_SESSDATA: str = os.environ.get("BILI_SESSDATA", "").strip()
     TOPIC_CONCURRENCY: int = int(os.environ.get("TOPIC_CONCURRENCY", "2"))
 
 
