@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Agent 开发（示例数据） — 候选视频</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+         background: #f5f6f8; color: #1f2330; margin: 0; padding: 16px 32px; }
+  header { position: sticky; top: 0; background: #fff; padding: 12px 16px; border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.06); margin-bottom: 20px; z-index: 5; }
+  h1 { margin: 0 0 4px; font-size: 20px; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  button { padding: 6px 12px; border: 1px solid #d0d3d8; background: #fff; border-radius: 6px;
+           cursor: pointer; font-size: 13px; }
+  button:hover { background: #f0f3f7; }
+  .stats { font-size: 12px; color: #5b6273; margin-top: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+          gap: 16px; }
+  .card { background: #fff; border-radius: 10px; padding: 14px;
+          box-shadow: 0 1px 3px rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 8px; }
+  .card-header { display: flex; gap: 10px; align-items: flex-start; }
+  .cover { width: 160px; height: 96px; object-fit: cover; border-radius: 6px;
+           background: #e8eaef; flex-shrink: 0; }
+  .title { font-size: 14px; font-weight: 600; line-height: 1.4; margin: 0; }
+  .meta-row { font-size: 12px; color: #5b6273; display: flex; flex-wrap: wrap; gap: 8px; }
+  .score-pill { background: #e8f0ff; color: #1d4ed8; padding: 2px 8px; border-radius: 12px;
+                font-weight: 600; font-size: 12px; }
+  .badge { padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+  .badge-official { background: #d1f7d6; color: #166534; }
+  .badge-auto { background: #fff4cc; color: #92580a; }
+  .badge-none { background: #fde2e2; color: #991b1b; }
+  .badge-unknown { background: #e0e3eb; color: #475569; }
+  .warn { background: #fff8db; color: #8a6100; padding: 6px 8px; border-radius: 4px;
+         font-size: 12px; }
+  .skip { background: #fde2e2; color: #991b1b; padding: 6px 8px; border-radius: 4px;
+         font-size: 12px; }
+  .reasons { background: #fafbfd; padding: 6px 8px; border-radius: 4px; font-size: 12px;
+             color: #5b6273; }
+  .actions { display: flex; align-items: center; justify-content: space-between;
+             margin-top: 4px; }
+  .checkbox { transform: scale(1.2); }
+  .subscores { font-size: 11px; color: #5b6273; }
+  .subscores span { margin-right: 6px; }
+  .empty { color: #9aa0ac; font-style: italic; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 主题：Agent 开发（示例数据）</h1>
+  <div class="stats">
+    共 <b id="total-count">0</b> 条候选，
+    已勾选 <b id="selected-count">0</b> 条，
+    其中官方字幕 <b id="official-count">0</b> 条、
+    自动字幕 <b id="auto-count">0</b> 条、
+    无字幕（将跳过）<b id="none-count">0</b> 条
+  </div>
+  <div class="toolbar">
+    <button onclick="selectTop()">全选高分项 (≥ 0.7)</button>
+    <button onclick="selectOfficial()">仅选官方字幕</button>
+    <button onclick="selectNone()">全不选</button>
+    <button onclick="exportSelection()">导出勾选 selection.json</button>
+    <span id="export-msg" class="stats" style="margin-left:8px;"></span>
+  </div>
+</header>
+
+<div class="grid" id="grid">
+  
+<div class="card">
+  <div class="card-header">
+    <img class="cover" loading="lazy" src="https://i0.hdslb.com/bfs/archive/abc.jpg" onerror="this.style.display='none'" />
+    <div style="flex:1; min-width:0;">
+      <p class="title"><a href="" target="_blank">Agent 开发入门：ReAct + Function Calling 实操</a></p>
+      <div class="meta-row">
+        <span>👤 CodeTuber</span>
+        <span>⏱ 18:00</span>
+        <span>📅 2024-06-01</span>
+      </div>
+      <div class="meta-row">
+        <span>▶ 380,000</span>
+        <span>👍 12,000</span>
+        <span>★ 9,800</span>
+        <span>💬 2,500</span>
+        <span class="score-pill">综合 1.00</span>
+      </div>
+    </div>
+  </div>
+  <div class="meta-row"><span class="badge badge-official">官方字幕</span></div>
+  
+  {'view': 1.0, 'relevance': 1.0, 'publish_time': 1.0, 'subtitle': 1.0, 'up': 1.0, 'interaction': 1.0, 'duration': 1.0}
+  
+  <div class="actions">
+    <label><input type="checkbox" class="checkbox" id="cb-BV1xx411c7mD" /> 选入主题</label>
+    <span class="meta-row">BV1xx411c7mD</span>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-header">
+    <img class="cover" loading="lazy" src="https://i0.hdslb.com/bfs/archive/ghi.jpg" onerror="this.style.display='none'" />
+    <div style="flex:1; min-width:0;">
+      <p class="title"><a href="" target="_blank">为什么你的 Agent 不稳定？5 个常见坑</a></p>
+      <div class="meta-row">
+        <span>👤 AgentDoctor</span>
+        <span>⏱ 12:00</span>
+        <span>📅 2024-07-01</span>
+      </div>
+      <div class="meta-row">
+        <span>▶ 150,000</span>
+        <span>👍 4,800</span>
+        <span>★ 4,200</span>
+        <span>💬 900</span>
+        <span class="score-pill">综合 0.89</span>
+      </div>
+    </div>
+  </div>
+  <div class="meta-row"><span class="badge badge-official">官方字幕</span></div>
+  
+  {'view': 0.9552562551718249, 'relevance': 0.5, 'publish_time': 1.0, 'subtitle': 1.0, 'up': 1.0, 'interaction': 1.0, 'duration': 1.0}
+  
+  <div class="actions">
+    <label><input type="checkbox" class="checkbox" id="cb-BV1xx411c7mF" /> 选入主题</label>
+    <span class="meta-row">BV1xx411c7mF</span>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-header">
+    <img class="cover" loading="lazy" src="https://i0.hdslb.com/bfs/archive/pqr.jpg" onerror="this.style.display='none'" />
+    <div style="flex:1; min-width:0;">
+      <p class="title"><a href="" target="_blank">Agent 评估：如何衡量一个 agent 的好坏</a></p>
+      <div class="meta-row">
+        <span>👤 EvalLab</span>
+        <span>⏱ 22:00</span>
+        <span>📅 2024-05-06</span>
+      </div>
+      <div class="meta-row">
+        <span>▶ 90,000</span>
+        <span>👍 2,800</span>
+        <span>★ 2,400</span>
+        <span>💬 600</span>
+        <span class="score-pill">综合 0.87</span>
+      </div>
+    </div>
+  </div>
+  <div class="meta-row"><span class="badge badge-official">官方字幕</span></div>
+  
+  {'view': 0.9143140783804226, 'relevance': 0.5, 'publish_time': 1.0, 'subtitle': 1.0, 'up': 1.0, 'interaction': 1.0, 'duration': 1.0}
+  
+  <div class="actions">
+    <label><input type="checkbox" class="checkbox" id="cb-BV1xx411c7mI" /> 选入主题</label>
+    <span class="meta-row">BV1xx411c7mI</span>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-header">
+    <img class="cover" loading="lazy" src="https://i0.hdslb.com/bfs/archive/def.jpg" onerror="this.style.display='none'" />
+    <div style="flex:1; min-width:0;">
+      <p class="title"><a href="" target="_blank">LangGraph 实战：构建可观测的多 Agent 系统</a></p>
+      <div class="meta-row">
+        <span>👤 AIExplorer</span>
+        <span>⏱ 27:00</span>
+        <span>📅 2024-05-01</span>
+      </div>
+      <div class="meta-row">
+        <span>▶ 210,000</span>
+        <span>👍 7,400</span>
+        <span>★ 6,500</span>
+        <span>💬 1,800</span>
+        <span class="score-pill">综合 0.85</span>
+      </div>
+    </div>
+  </div>
+  <div class="meta-row"><span class="badge badge-auto">自动字幕</span></div>
+  <div class="warn">⚠ 仅自动字幕，可能有错别字</div>
+  {'view': 0.9822242595715688, 'relevance': 0.5, 'publish_time': 1.0, 'subtitle': 0.6, 'up': 1.0, 'interaction': 1.0, 'duration': 1.0}
+  <div class="reasons">⚑ 仅有自动字幕，质量可能有误</div>
+  <div class="actions">
+    <label><input type="checkbox" class="checkbox" id="cb-BV1xx411c7mE" /> 选入主题</label>
+    <span class="meta-row">BV1xx411c7mE</span>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-header">
+    <img class="cover" loading="lazy" src="https://i0.hdslb.com/bfs/archive/jkl.jpg" onerror="this.style.display='none'" />
+    <div style="flex:1; min-width:0;">
+      <p class="title"><a href="" target="_blank">手写一个极简 Agent：从规划到工具调用</a></p>
+      <div class="meta-row">
+        <span>👤 CodeTeacher</span>
+        <span>⏱ 45:00</span>
+        <span>📅 2024-04-02</span>
+      </div>
+      <div class="meta-row">
+        <span>▶ 520,000</span>
+        <span>👍 22,000</span>
+        <span>★ 19,000</span>
+        <span>💬 4,500</span>
+        <span class="score-pill">综合 0.85</span>
+      </div>
+    </div>
+  </div>
+  <div class="meta-row"><span class="badge badge-auto">自动字幕</span></div>
+  <div class="warn">⚠ 仅自动字幕，可能有错别字</div>
+  {'view': 1.0, 'relevance': 0.5, 'publish_time': 1.0, 'subtitle': 0.6, 'up': 1.0, 'interaction': 1.0, 'duration': 0.8}
+  <div class="reasons">⚑ 仅有自动字幕，质量可能有误</div>
+  <div class="actions">
+    <label><input type="checkbox" class="checkbox" id="cb-BV1xx411c7mG" /> 选入主题</label>
+    <span class="meta-row">BV1xx411c7mG</span>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-header">
+    <img class="cover" loading="lazy" src="https://i0.hdslb.com/bfs/archive/mno.jpg" onerror="this.style.display='none'" />
+    <div style="flex:1; min-width:0;">
+      <p class="title"><a href="" target="_blank">闲聊：AI 行业最近发生的事（无字幕）</a></p>
+      <div class="meta-row">
+        <span>👤 NewsUP</span>
+        <span>⏱ 8:00</span>
+        <span>📅 2024-06-30</span>
+      </div>
+      <div class="meta-row">
+        <span>▶ 180,000</span>
+        <span>👍 3,200</span>
+        <span>★ 1,500</span>
+        <span>💬 1,100</span>
+        <span class="score-pill">综合 0.69</span>
+      </div>
+    </div>
+  </div>
+  <div class="meta-row"><span class="badge badge-none">无字幕</span></div>
+  <div class="skip">✖ 该视频将被跳过，不会被总结</div>
+  {'view': 0.9698691886634416, 'relevance': 0.0, 'publish_time': 1.0, 'subtitle': 0.0, 'up': 1.0, 'interaction': 1.0, 'duration': 1.0}
+  <div class="reasons">⚑ 标题/简介与关键词相关度较低；无字幕，将被跳过</div>
+  <div class="actions">
+    <label><input type="checkbox" class="checkbox" id="cb-BV1xx411c7mH" /> 选入主题</label>
+    <span class="meta-row">BV1xx411c7mH</span>
+  </div>
+</div>
+
+</div>
+
+<script>
+  const items = [{"bvid": "BV1xx411c7mD", "title": "Agent 开发入门：ReAct + Function Calling 实操", "owner": "CodeTuber", "duration": 1080, "duration_human": "18:00", "publish_time_human": "2024-06-01", "view": 380000, "like": 12000, "favorite": 9800, "reply": 2500, "subtitle_type": "official", "score": 1.0, "sub_scores": {"view": 1.0, "relevance": 1.0, "publish_time": 1.0, "subtitle": 1.0, "up": 1.0, "interaction": 1.0, "duration": 1.0}, "reasons": [], "cover": "https://i0.hdslb.com/bfs/archive/abc.jpg", "url": "", "checked": false}, {"bvid": "BV1xx411c7mF", "title": "为什么你的 Agent 不稳定？5 个常见坑", "owner": "AgentDoctor", "duration": 720, "duration_human": "12:00", "publish_time_human": "2024-07-01", "view": 150000, "like": 4800, "favorite": 4200, "reply": 900, "subtitle_type": "official", "score": 0.8866, "sub_scores": {"view": 0.9552562551718249, "relevance": 0.5, "publish_time": 1.0, "subtitle": 1.0, "up": 1.0, "interaction": 1.0, "duration": 1.0}, "reasons": [], "cover": "https://i0.hdslb.com/bfs/archive/ghi.jpg", "url": "", "checked": false}, {"bvid": "BV1xx411c7mI", "title": "Agent 评估：如何衡量一个 agent 的好坏", "owner": "EvalLab", "duration": 1320, "duration_human": "22:00", "publish_time_human": "2024-05-06", "view": 90000, "like": 2800, "favorite": 2400, "reply": 600, "subtitle_type": "official", "score": 0.8743, "sub_scores": {"view": 0.9143140783804226, "relevance": 0.5, "publish_time": 1.0, "subtitle": 1.0, "up": 1.0, "interaction": 1.0, "duration": 1.0}, "reasons": [], "cover": "https://i0.hdslb.com/bfs/archive/pqr.jpg", "url": "", "checked": false}, {"bvid": "BV1xx411c7mE", "title": "LangGraph 实战：构建可观测的多 Agent 系统", "owner": "AIExplorer", "duration": 1620, "duration_human": "27:00", "publish_time_human": "2024-05-01", "view": 210000, "like": 7400, "favorite": 6500, "reply": 1800, "subtitle_type": "auto", "score": 0.8547, "sub_scores": {"view": 0.9822242595715688, "relevance": 0.5, "publish_time": 1.0, "subtitle": 0.6, "up": 1.0, "interaction": 1.0, "duration": 1.0}, "reasons": ["仅有自动字幕，质量可能有误"], "cover": "https://i0.hdslb.com/bfs/archive/def.jpg", "url": "", "checked": false}, {"bvid": "BV1xx411c7mG", "title": "手写一个极简 Agent：从规划到工具调用", "owner": "CodeTeacher", "duration": 2700, "duration_human": "45:00", "publish_time_human": "2024-04-02", "view": 520000, "like": 22000, "favorite": 19000, "reply": 4500, "subtitle_type": "auto", "score": 0.85, "sub_scores": {"view": 1.0, "relevance": 0.5, "publish_time": 1.0, "subtitle": 0.6, "up": 1.0, "interaction": 1.0, "duration": 0.8}, "reasons": ["仅有自动字幕，质量可能有误"], "cover": "https://i0.hdslb.com/bfs/archive/jkl.jpg", "url": "", "checked": false}, {"bvid": "BV1xx411c7mH", "title": "闲聊：AI 行业最近发生的事（无字幕）", "owner": "NewsUP", "duration": 480, "duration_human": "8:00", "publish_time_human": "2024-06-30", "view": 180000, "like": 3200, "favorite": 1500, "reply": 1100, "subtitle_type": "none", "score": 0.691, "sub_scores": {"view": 0.9698691886634416, "relevance": 0.0, "publish_time": 1.0, "subtitle": 0.0, "up": 1.0, "interaction": 1.0, "duration": 1.0}, "reasons": ["标题/简介与关键词相关度较低", "无字幕，将被跳过"], "cover": "https://i0.hdslb.com/bfs/archive/mno.jpg", "url": "", "checked": false}];
+
+  function refreshStats() {
+    const checked = items.filter(i => i.checked);
+    document.getElementById('selected-count').textContent = checked.length;
+    document.getElementById('official-count').textContent =
+      checked.filter(i => i.subtitle_type === 'official').length;
+    document.getElementById('auto-count').textContent =
+      checked.filter(i => i.subtitle_type === 'auto').length;
+    document.getElementById('none-count').textContent =
+      checked.filter(i => i.subtitle_type === 'none').length;
+  }
+
+  function bind() {
+    items.forEach(it => {
+      const cb = document.getElementById('cb-' + it.bvid);
+      cb.addEventListener('change', () => {
+        it.checked = cb.checked;
+        refreshStats();
+      });
+    });
+  }
+
+  function selectTop() {
+    items.forEach(it => {
+      if (it.subtitle_type === 'none') {
+        it.checked = false;
+      } else {
+        it.checked = it.score >= 0.7;
+      }
+      const cb = document.getElementById('cb-' + it.bvid);
+      if (cb) cb.checked = it.checked;
+    });
+    refreshStats();
+  }
+
+  function selectOfficial() {
+    items.forEach(it => {
+      it.checked = it.subtitle_type === 'official';
+      const cb = document.getElementById('cb-' + it.bvid);
+      if (cb) cb.checked = it.checked;
+    });
+    refreshStats();
+  }
+
+  function selectNone() {
+    items.forEach(it => {
+      it.checked = false;
+      const cb = document.getElementById('cb-' + it.bvid);
+      if (cb) cb.checked = false;
+    });
+    refreshStats();
+  }
+
+  function exportSelection() {
+    const payload = {
+      topic_slug: "agent-development",
+      exported_at: new Date().toISOString(),
+      selected: items
+        .filter(i => i.checked && i.subtitle_type !== 'none')
+        .map(i => ({
+          bvid: i.bvid,
+          title: i.title,
+          owner: i.owner,
+          duration: i.duration,
+          subtitle_type: i.subtitle_type,
+          score: i.score,
+          url: i.url
+        }))
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'selection.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    document.getElementById('export-msg').textContent =
+      '✅ 已导出 ' + payload.selected.length + ' 条，请将 selection.json 放回主题目录。';
+  }
+
+  document.getElementById('total-count').textContent = items.length;
+  refreshStats();
+  bind();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+# ---------- 安全：密钥与本地配置 ----------
+.env
+.env.*
+!.env.example
+
+# 含原始泄漏 Key 的旧脚本与复制副本，绝对不入库
+job_matcher.py
+**/job_matcher.py
+**/docs/reference/
+
+# 油猴脚本副本不入库
+视频字幕提取器*.txt
+**/视频字幕提取器*.txt
+
+# 任何形式的 Key 字面量兜底（.gitattributes / filters 之前的安全网）
+# 注：真正的防护在 secrets-scanning / pre-commit hooks，.gitignore 只是兜底
+
+# ---------- Python ----------
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# ---------- 主题数据 ----------
+topics/*/sources/
+topics/*/chunks/
+topics/*/cards/
+topics/*/candidates/
+topics/*/selection.json
+topics/*/state.json
+topics/*/logs/
+topics/*/screenshots/
+topics/*/report.md
+topics/*/learning-path.md
+topics/*/search-gaps.md
+topics/*/candidates.html
+
+# ---------- 临时文件 ----------
+*.tmp
+*.log
+*.bak
+
+# ---------- 工具草稿 ----------
+task_plan.md
+progress.md
+findings.md

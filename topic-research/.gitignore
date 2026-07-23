@@ -1,0 +1,28 @@
+# 本地配置
+.env
+
+# 主题数据（包含字幕与个人资料）
+topics/*/sources/
+topics/*/chunks/
+topics/*/cards/
+topics/*/candidates/
+topics/*/selection.json
+topics/*/state.json
+topics/*/logs/
+topics/*/report.md
+topics/*/learning-path.md
+topics/*/search-gaps.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# 临时文件
+*.tmp
+*.log
