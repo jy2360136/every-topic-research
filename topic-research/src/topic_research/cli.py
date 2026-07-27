@@ -326,6 +326,29 @@ def cmd_run(args: argparse.Namespace) -> None:
     cmd_process(argparse.Namespace(slug=args.slug, topic=args.topic))
 
 
+def cmd_serve(args: argparse.Namespace) -> None:
+    """本地 HTTP server：浏览器直连 → 导出 selection.json 零对话框 → 一键跑 process
+
+    工作流：
+    1. 浏览器打开 http://127.0.0.1:<port>/
+    2. 勾选视频 → 点「导出勾选」→ 文件直接写到 topics/<slug>/selection.json（无对话框）
+    3. 页面出现「▶ 立即开始处理」按钮 → 点击 → 自动跑 process
+    4. 页面轮询显示处理进度
+    """
+    topic_dir = _topic_dir(args.slug, args.topic)
+    if not topic_dir.exists():
+        raise SystemExit(f"主题目录不存在：{topic_dir}。请先运行 search 阶段。")
+
+    from .serve import serve as _serve
+
+    _serve(
+        project_root=_project_root(),
+        slug=args.slug or topic_dir.name,
+        port=args.port,
+        open_browser=not args.no_open,
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="topic-research", description="主题学习研究工作流")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -354,6 +377,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--topic", help="主题关键词")
     p_run.add_argument("--slug", help="主题 slug")
     p_run.set_defaults(func=cmd_run)
+
+    p_serve = sub.add_parser("serve", help="本地 HTTP server：浏览器直连，导出零对话框")
+    p_serve.add_argument("--slug", help="主题 slug")
+    p_serve.add_argument("--topic", help="主题关键词（与 search 阶段一致）")
+    p_serve.add_argument("--port", type=int, default=8765, help="端口，默认 8765")
+    p_serve.add_argument("--no-open", action="store_true", help="不自动打开浏览器")
+    p_serve.set_defaults(func=cmd_serve)
 
     return parser
 
